@@ -16,7 +16,7 @@
 
     <style>
         :root {
-            --primary-color: #6f42c1;
+            --primary-color: #d4a574;
             --secondary-color: #f8f9fa;
             --success-color: #28a745;
             --danger-color: #dc3545;
@@ -35,7 +35,8 @@
 
         /* HEADER */
         .navbar {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%);
+            /* background: linear-gradient(135deg, var(--primary-color) 0%, #d4a574 100%); */
+            background: rgba(44, 32, 19, 0.95);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
@@ -207,7 +208,7 @@
         }
 
         .cart-btn {
-            background: linear-gradient(135deg, var(--primary-color) 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, #d4a574 100%);
             color: white;
             border: none;
             padding: 1rem;

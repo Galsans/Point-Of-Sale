@@ -1,6 +1,18 @@
+<style>
+    .menu-disabled {
+        opacity: 0.5;
+        pointer-events: none;
+        /* 🔥 bikin benar-benar tidak bisa diklik */
+        cursor: not-allowed;
+    }
+</style>
 @forelse ($data as $menu)
-    <div class="col-12 col-sm-6 col-md-4 menu-item" data-category="{{ $menu->category_id }}"
-        data-name="{{ strtolower($menu->name) }}">
+    {{-- <div class="col-12 col-sm-6 col-md-4 menu-item" data-category="{{ $menu->category_id }}"
+        data-name="{{ strtolower($menu->name) }}"> --}}
+    <div class="col-12 col-sm-6 col-md-4 menu-item
+    {{ !$menu->is_available ? 'menu-disabled' : '' }}"
+        data-category="{{ $menu->category_id }}" data-name="{{ strtolower($menu->name) }}">
+
         <div class="menu-card">
             <img src="{{ $menu->image ? asset('storage/' . $menu->image) : 'https://via.placeholder.com/300x140?text=No+Image' }}"
                 class="menu-card-img" alt="{{ $menu->name }}" loading="lazy">

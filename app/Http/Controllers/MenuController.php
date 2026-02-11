@@ -23,27 +23,96 @@ class MenuController extends Controller
         $isAvailable = $request->is_available; // new filter
         $categoryId = $request->category_id;
 
-        $categories = Category::orderBy('name')->get();
+        // $categories = Category::where('parent_id', null)->orderBy('name')->get();
+        // $categories = Category::whereNull('parent_id')
+        //     ->with('children')
+        //     ->orderBy('name')
+        //     ->get();
 
-        $data = Menu::with('category')
-            ->when(
-                $categoryId,
-                fn($q) =>
-                $q->where('category_id', $categoryId)
-            )
+        // $data = Menu::with('category.parent')
+        //     ->when($categoryId, function ($q) use ($categoryId) {
+        //         $q->whereHas('category', function ($cat) use ($categoryId) {
+        //             $cat->where('id', $categoryId)
+        //                 ->orWhere('parent_id', $categoryId);
+        //         });
+        //     })
+        //     ->when($search, function ($q) use ($search) {
+        //         $q->where(function ($query) use ($search) {
+        //             $query->where('name', 'like', "%{$search}%")
+        //                 ->orWhereHas('category', function ($cat) use ($search) {
+        //                     $cat->where('name', 'like', "%{$search}%")
+        //                         ->orWhereHas('parent', function ($parent) use ($search) {
+        //                             $parent->where('name', 'like', "%{$search}%");
+        //                         });
+        //                 });
+        //         });
+        //     })
+        //     ->when($request->filled('is_available'), function ($q) use ($isAvailable) {
+        //         $q->where('is_available', (bool) $isAvailable);
+        //     })
+        //     ->orderBy('id', 'desc')
+        //     ->cursorPaginate(8)
+        //     ->withQueryString();
+
+        $categories = Category::whereNull('parent_id')
+            ->with('childrenRecursive')
+            ->orderBy('name')
+            ->get();
+
+        $categoryIds = [];
+
+        if ($categoryId) {
+            $selectedCategory = Category::with('childrenRecursive')->find($categoryId);
+
+            if ($selectedCategory) {
+                $categoryIds = $selectedCategory->getAllCategoryIds($selectedCategory);
+            }
+        }
+
+        $data = Menu::with('category.parent')
+            ->when(!empty($categoryIds), function ($q) use ($categoryIds) {
+                $q->whereIn('category_id', $categoryIds);
+            })
             ->when($search, function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhereHas('category', function ($cat) use ($search) {
-                        $cat->where('name', 'like', "%{$search}%");
-                    });
+                $q->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhereHas('category', function ($cat) use ($search) {
+                            $cat->where('name', 'like', "%{$search}%")
+                                ->orWhereHas('parent', function ($parent) use ($search) {
+                                    $parent->where('name', 'like', "%{$search}%");
+                                });
+                        });
+                });
             })
             ->when($request->filled('is_available'), function ($q) use ($isAvailable) {
-                // pastikan 0 tetap terbaca, cast ke boolean
                 $q->where('is_available', (bool) $isAvailable);
             })
             ->orderBy('id', 'desc')
             ->cursorPaginate(8)
-            ->withQueryString(); // ⭐ PENTING agar query string tetap terjaga
+            ->withQueryString();
+
+
+        // $data = Menu::with('category')
+        //     ->when(
+        //         $categoryId,
+        //         fn($q) =>
+        //         $q->where('category_id', $categoryId)
+        //     )
+        //     ->when($search, function ($q) use ($search) {
+        //         $q->where('name', 'like', "%{$search}%")
+        //             ->orWhereHas('category', function ($cat) use ($search) {
+        //                 $cat->where('name', 'like', "%{$search}%");
+        //             });
+        //     })
+        //     ->when($request->filled('is_available'), function ($q) use ($isAvailable) {
+        //         // pastikan 0 tetap terbaca, cast ke boolean
+        //         $q->where('is_available', (bool) $isAvailable);
+        //     })
+        //     ->orderBy('id', 'desc')
+        //     ->cursorPaginate(8)
+        //     ->withQueryString(); // ⭐ PENTING agar query string tetap terjaga
+
+
 
         if ($request->ajax()) {
             return response(

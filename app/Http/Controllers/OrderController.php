@@ -374,34 +374,78 @@ class OrderController extends Controller
             //     })
             //     ->cursorPaginate(6);
 
-            $data = Menu::with('category')
-                // ->join('categories', 'menus.category_id', '=', 'categories.id')
-                // ->select('menus.*') // penting! agar tidak konflik kolom
-                // ->when($categoryId, fn($q) => $q->where('menus.category_id', $categoryId))
-                ->when($request->category_id, function ($query, $categoryId) {
-                    $query->where('category_id', $categoryId);
-                })
-                ->when($request->search, function ($query, $search) {
-                    $query->where('name', 'like', "%{$search}%");
-                })
-                // ->when($search, function ($q) use ($search) {
-                //     $q->where('menus.name', 'like', "%{$search}%")
-                //         ->orWhere('categories.name', 'like', "%{$search}%");
-                // })
-                // ->where('menus.is_available', true)
-                // ->orderBy('categories.name', 'asc')  // urutkan berdasarkan nama kategori
-                // ->orderBy('menus.id', 'desc')        // kemudian urutkan berdasarkan menu ID
-                ->orderBy('id', 'desc')        // kemudian urutkan berdasarkan menu ID
-                ->cursorPaginate(6);
-            // ->withQueryString();
+            // $data = Menu::with('category')
+            //     // ->join('categories', 'menus.category_id', '=', 'categories.id')
+            //     // ->select('menus.*') // penting! agar tidak konflik kolom
+            //     // ->when($categoryId, fn($q) => $q->where('menus.category_id', $categoryId))
+            //     ->when($request->category_id, function ($query, $categoryId) {
+            //         $query->where('category_id', $categoryId);
+            //     })
+            //     ->when($request->search, function ($query, $search) {
+            //         $query->where('name', 'like', "%{$search}%");
+            //     })
+            //     // ->when($search, function ($q) use ($search) {
+            //     //     $q->where('menus.name', 'like', "%{$search}%")
+            //     //         ->orWhere('categories.name', 'like', "%{$search}%");
+            //     // })
+            //     // ->where('menus.is_available', true)
+            //     // ->orderBy('categories.name', 'asc')  // urutkan berdasarkan nama kategori
+            //     // ->orderBy('menus.id', 'desc')        // kemudian urutkan berdasarkan menu ID
+            //     ->orderBy('id', 'desc')        // kemudian urutkan berdasarkan menu ID
+            //     ->cursorPaginate(6);
+            // // ->withQueryString();
 
-            // Load categories untuk filter
-            // $categories = \App\Models\Category::withCount('menus')->get();
-            $categories = Category::whereHas('menus', function ($query) {
-                $query->where('is_available', true);
-            })
+            // // Load categories untuk filter
+            // // $categories = \App\Models\Category::withCount('menus')->get();
+            // $categories = Category::whereHas('menus', function ($query) {
+            //     $query->where('is_available', true);
+            // })
+            //     ->orderBy('name')
+            //     ->get();
+
+            $search = $request->search;
+            $isAvailable = $request->is_available; // new filter
+            $categoryId = $request->category_id;
+
+            $categories = Category:: //whereHas('menus', function ($query) {
+                // $query->where('is_available', true);
+                // })
+                whereNull('parent_id')
+                ->with('childrenRecursive')
                 ->orderBy('name')
                 ->get();
+
+            $categoryIds = [];
+
+            if ($categoryId) {
+                $selectedCategory = Category::with('childrenRecursive')->find($categoryId);
+
+                if ($selectedCategory) {
+                    $categoryIds = $selectedCategory->getAllCategoryIds($selectedCategory);
+                }
+            }
+
+            $data = Menu::with('category.parent')
+                ->when(!empty($categoryIds), function ($q) use ($categoryIds) {
+                    $q->whereIn('category_id', $categoryIds);
+                })
+                ->when($search, function ($q) use ($search) {
+                    $q->where(function ($query) use ($search) {
+                        $query->where('name', 'like', "%{$search}%")
+                            ->orWhereHas('category', function ($cat) use ($search) {
+                                $cat->where('name', 'like', "%{$search}%")
+                                    ->orWhereHas('parent', function ($parent) use ($search) {
+                                        $parent->where('name', 'like', "%{$search}%");
+                                    });
+                            });
+                    });
+                })
+                // ->when($request->filled('is_available'), function ($q) use ($isAvailable) {
+                //     $q->where('is_available', (bool) $isAvailable);
+                // })
+                ->orderBy('id', 'desc')
+                ->cursorPaginate(6)
+                ->withQueryString();
 
             // Jika AJAX request, return partial view
             if ($request->ajax()) {
@@ -589,7 +633,7 @@ class OrderController extends Controller
             // $discountAmount = 0; // Bisa dikembangkan dengan promo code
 
             // $totalPrice = $calculatedSubtotal + $taxAmount + $serviceFee - $discountAmount;
-            
+
             // ✅ LEBIH AMAN
             $pajak = Pajak::first();
 

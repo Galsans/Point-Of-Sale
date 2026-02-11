@@ -21,7 +21,7 @@ class TableController extends Controller
             $q->where('floor', $floor);
         })
             ->orderBy('id')
-            ->cursorPaginate(10)
+            ->cursorPaginate(8)
             ->withQueryString(); // PENTING
 
         if ($request->ajax()) {
