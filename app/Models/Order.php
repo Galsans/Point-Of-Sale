@@ -21,6 +21,9 @@ class Order extends Model
         'discount_amount',
         'service_fee',
         'total_price',
+
+        "buktiPembayaran",
+        "notePembayaran",
     ];
 
     protected $casts = [

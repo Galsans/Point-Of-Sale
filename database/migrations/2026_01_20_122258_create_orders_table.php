@@ -72,6 +72,8 @@ return new class extends Migration
             $table->decimal('discount_amount', 12, 2)->default(0);
             $table->decimal('service_fee', 12, 2)->default(0);
             $table->decimal('total_price', 12, 2);
+            $table->string('buktiPembayaran')->nullable();
+            $table->string('notePembayaran')->nullable();
             $table->timestamps();
         });
     }

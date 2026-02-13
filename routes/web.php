@@ -94,7 +94,11 @@ Route::get('test-form', function () {
 Route::get('order/menu', [OrderController::class, 'menu'])->name('order.menu');
 Route::post('order/store', [OrderController::class, 'store'])->name('order.store')
     ->middleware('throttle:10,1'); // Max 10 request per minute
+// Route::get('order/confirmation/{orderCode}', [OrderController::class, 'confirmation'])->name('order.confirmation');
+
 Route::get('order/confirmation/{orderCode}', [OrderController::class, 'confirmation'])->name('order.confirmation');
+
+Route::post('order/upload-bukti/{orderCode}', [OrderController::class, 'uploadBukti'])->name('order.upload-bukti');
 
 // Route::get('/option-groups/search', [App\Http\Controllers\OptionGroupController::class, 'search']);
 // Route::get('/categories/search', [App\Http\Controllers\CategoryController::class, 'search'])->name('categories.search');

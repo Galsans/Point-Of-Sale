@@ -715,9 +715,22 @@ class OrderController extends Controller
             Log::info('✅ BROADCAST BERHASIL');
 
             // ✅ REDIRECT DENGAN order_code (BUKAN order->id)
-            return redirect()
-                ->route('order.confirmation', ['orderCode' => $order->order_code])
-                ->with('success', 'Pesanan berhasil dibuat!');
+            // return redirect()
+            //     ->route('order.confirmation', ['orderCode' => $order->order_code])
+            //     ->with('success', 'Pesanan berhasil dibuat!');
+
+            // dd($order->orderCode);
+            // $encryptedCode = urlencode(Crypt::encryptString($order->order_code));
+
+            // return redirect()->route('order.confirmation', [
+            //     'orderCode' => $encryptedCode
+            // ]);
+            // ✅ Sesudah — langsung encrypt tanpa urlencode
+            $encryptedCode = Crypt::encryptString($order->order_code);
+
+            return redirect()->route('order.confirmation', [
+                'orderCode' => $encryptedCode
+            ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
             return back()
@@ -745,10 +758,117 @@ class OrderController extends Controller
      */
     public function confirmation($orderCode)
     {
+        // try {
+        //     $decoded = Crypt::decryptString(urldecode($orderCode));
+        // } catch (\Exception $e) {
+        //     abort(404);
+        // }
+        // ✅ Sesudah — langsung decrypt saja
+        try {
+            $decoded = Crypt::decryptString($orderCode);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order tidak valid.',
+            ], 404);
+        }
+
         $order = Order::with(['items.menu', 'items.options', 'table'])
-            ->where('order_code', $orderCode)
+            ->where('order_code', $decoded)
             ->firstOrFail();
 
-        return view('order.confirmation', compact('order'));
+        // return view('order.confirmation', compact('order'));
+        return view('order.confirmation', [
+            'order'       => $order,
+            'orderCode'   => $orderCode, // ← pass encrypted code yang sudah valid
+        ]);
+    }
+
+    // public function uploadBukti(Request $request, $orderCode)
+    // {
+    //     // ✅ Validasi input
+    //     $validator = Validator::make($request->all(), [
+    //         'buktiPembayaran' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+    //         'notePembayaran' => 'required|string|max:255',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return back()->withErrors($validator)->withInput();
+    //     }
+
+    //     // ✅ Sesudah — langsung decrypt saja
+    //     try {
+    //         $decoded = Crypt::decryptString($orderCode);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Order tidak valid.',
+    //         ], 404);
+    //     }
+
+    //     // ✅ Cari order berdasarkan order_code (bukan id)
+    //     $order = Order::where('order_code', $decoded)->firstOrFail();
+
+    //     // ✅ Upload file
+    //     if ($request->hasFile('buktiPembayaran')) {
+    //         $file = $request->file('buktiPembayaran');
+
+    //         // nama file unik
+    //         $filename = time() . '_' . $file->getClientOriginalName();
+
+    //         // simpan ke storage/app/public/bukti
+    //         $path = $file->storeAs('bukti', $filename, 'public');
+
+    //         // simpan path ke database
+    //         $order->buktiPembayaran = $path;
+    //     }
+
+    //     // simpan catatan
+    //     $order->notePembayaran = $request->notePembayaran;
+    //     $order->save();
+
+    //     // return back()->with('success', 'Bukti pembayaran berhasil diupload');
+    //     // ✅ Return JSON bukan back()
+    //     return response()->json(['success' => true]);
+    // }
+
+    public function uploadBukti(Request $request, $orderCode)
+    {
+        // ✅ Validasi — notePembayaran nullable, return JSON jika gagal
+        $validator = Validator::make($request->all(), [
+            'buktiPembayaran' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'notePembayaran'  => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ], 422);
+        }
+
+        // ✅ Decrypt langsung tanpa urldecode
+        try {
+            $decoded = Crypt::decryptString($orderCode);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order tidak valid.',
+            ], 404);
+        }
+
+        $order = Order::where('order_code', $decoded)->firstOrFail();
+
+        if ($request->hasFile('buktiPembayaran')) {
+            $file     = $request->file('buktiPembayaran');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $path     = $file->storeAs('bukti', $filename, 'public');
+            $order->buktiPembayaran = $path;
+        }
+
+        $order->notePembayaran = $request->notePembayaran;
+        $order->save();
+
+        return response()->json(['success' => true]);
     }
 }

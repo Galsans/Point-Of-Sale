@@ -19,7 +19,7 @@
                             <h5 class="mb-0">Kode Pesanan: <strong>{{ $order->order_code }}</strong></h5>
                         </div>
 
-                        {{-- QRIS PAYMENT SECTION - MOVED TO TOP --}}
+                        {{-- QRIS PAYMENT SECTION --}}
                         <div class="mt-4 text-center">
                             <div class="card bg-light">
                                 <div class="card-body">
@@ -45,6 +45,7 @@
                                             </button>
                                         </div>
                                     </div>
+
                                     {{-- QR Code Image --}}
                                     <div class="qris-container mb-3">
                                         <img id="qrisImage" src="{{ asset('qr/qris.jpg') }}" alt="QRIS Payment"
@@ -69,6 +70,91 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- ═══════════════════════════════════════════════════════════════ --}}
+                        {{-- UPLOAD BUKTI PEMBAYARAN                                        --}}
+                        {{-- ═══════════════════════════════════════════════════════════════ --}}
+                        <div class="mt-4 text-start">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="mdi mdi-upload"></i> Upload Bukti Pembayaran
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">
+                                        Setelah melakukan pembayaran, upload bukti transfer/screenshot pembayaran Anda di
+                                        sini.
+                                    </p>
+
+                                    <form id="uploadBuktiForm" action="{{ route('order.upload-bukti', $orderCode) }}"
+                                        method="POST" enctype="multipart/form-data">
+                                        @csrf
+
+                                        {{-- Drop Zone --}}
+                                        <div id="dropZone" class="border border-2 rounded p-4 text-center mb-3"
+                                            style="border-color: #0d6efd; border-style: dashed !important; cursor: pointer; transition: background 0.2s;"
+                                            onclick="document.getElementById('buktiFile').click()">
+
+                                            {{-- Placeholder --}}
+                                            <div id="dropZonePlaceholder">
+                                                <i class="mdi mdi-cloud-upload text-primary" style="font-size: 48px;"></i>
+                                                <p class="mb-1 text-muted mt-2">Klik atau seret file ke sini</p>
+                                                <small class="text-muted">Format: JPG, PNG, PDF &mdash; Maks. 5 MB</small>
+                                            </div>
+
+                                            {{-- Preview (hidden until file chosen) --}}
+                                            <div id="dropZonePreview" class="d-none">
+                                                <img id="previewImage" src="#" alt="Preview"
+                                                    class="img-fluid rounded mb-2"
+                                                    style="max-height: 200px; object-fit: contain;">
+                                                <p id="previewFilename" class="mb-0 text-success fw-semibold small"></p>
+                                                <small id="previewFilesize" class="text-muted"></small>
+                                                <br>
+                                                <button type="button" id="btnChangeFile"
+                                                    class="btn btn-outline-secondary btn-sm mt-2"
+                                                    onclick="event.stopPropagation(); document.getElementById('buktiFile').click();">
+                                                    <i class="mdi mdi-pencil"></i> Ganti File
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <input type="file" id="buktiFile" name="buktiPembayaran"
+                                            accept="image/jpeg,image/png,application/pdf" class="d-none">
+
+                                        {{-- File error --}}
+                                        <div id="fileError" class="alert alert-danger d-none py-2 mb-3">
+                                            <i class="mdi mdi-alert-circle"></i>
+                                            <span id="fileErrorMsg"></span>
+                                        </div>
+
+                                        {{-- Optional note --}}
+                                        <div class="mb-3">
+                                            <label for="catatanPembayaran" class="form-label text-muted small">
+                                                <i class="mdi mdi-note-text"></i> Catatan (opsional)
+                                            </label>
+                                            <textarea id="catatanPembayaran" name="notePembayaran" rows="2" class="form-control"
+                                                placeholder="Contoh: Sudah transfer via BCA jam 13.00"></textarea>
+                                        </div>
+
+                                        {{-- Submit --}}
+                                        <div class="d-grid">
+                                            <button type="submit" id="btnUpload" class="btn btn-primary" disabled>
+                                                <i class="mdi mdi-send"></i> Kirim Bukti Pembayaran
+                                            </button>
+                                        </div>
+                                    </form>
+
+                                    {{-- Success state (shown after submit) --}}
+                                    <div id="uploadSuccess" class="alert alert-success mt-3 d-none">
+                                        <i class="mdi mdi-check-circle"></i>
+                                        <strong>Bukti pembayaran berhasil dikirim!</strong>
+                                        Pesanan Anda sedang diproses oleh kasir.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- ═══════════════════════════════════════════════════════════════ --}}
 
                         {{-- ORDER DETAILS --}}
                         <div class="text-start mt-5">
@@ -150,12 +236,10 @@
 
 @push('scripts')
     <script>
-        // Function to download QR Code
+        // ─── QRIS Download ────────────────────────────────────────────────────────
         function downloadQRCode() {
             const qrisImage = document.getElementById('qrisImage');
             const link = document.createElement('a');
-
-            // Convert image to blob and download
             fetch(qrisImage.src)
                 .then(response => response.blob())
                 .then(blob => {
@@ -173,42 +257,156 @@
                 });
         }
 
-        // Auto-download when page loads
         window.addEventListener('load', function() {
-            // Delay 1 second to ensure page is fully loaded
-            setTimeout(function() {
-                downloadQRCode();
-            }, 1000);
+            setTimeout(downloadQRCode, 1000);
         });
 
-        // Manual download button
-        document.getElementById('downloadQris').addEventListener('click', function() {
-            downloadQRCode();
-        });
+        document.getElementById('downloadQris').addEventListener('click', downloadQRCode);
 
-        // Copy total amount to clipboard
+        // ─── Copy Amount ──────────────────────────────────────────────────────────
         document.getElementById('copyAmount').addEventListener('click', function() {
             const totalAmount = document.getElementById('totalAmountRaw').textContent;
             const button = this;
             const originalHTML = button.innerHTML;
-
-            // Copy to clipboard
             navigator.clipboard.writeText(totalAmount).then(function() {
-                // Change button text to indicate success
                 button.innerHTML = '<i class="mdi mdi-check"></i> Copied!';
                 button.classList.remove('btn-light');
                 button.classList.add('btn-success');
-
-                // Reset button after 2 seconds
                 setTimeout(function() {
                     button.innerHTML = originalHTML;
                     button.classList.remove('btn-success');
                     button.classList.add('btn-light');
                 }, 2000);
-            }).catch(function(error) {
-                console.error('Error copying to clipboard:', error);
+            }).catch(function() {
                 alert('Gagal copy nominal. Silakan coba lagi.');
             });
+        });
+
+        // ─── Upload Bukti Pembayaran ──────────────────────────────────────────────
+        const buktiFile = document.getElementById('buktiFile');
+        const dropZone = document.getElementById('dropZone');
+        const placeholder = document.getElementById('dropZonePlaceholder');
+        const previewWrap = document.getElementById('dropZonePreview');
+        const previewImg = document.getElementById('previewImage');
+        const previewName = document.getElementById('previewFilename');
+        const previewSize = document.getElementById('previewFilesize');
+        const fileError = document.getElementById('fileError');
+        const fileErrorMsg = document.getElementById('fileErrorMsg');
+        const btnUpload = document.getElementById('btnUpload');
+        const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+
+        function formatBytes(bytes) {
+            return bytes < 1024 * 1024 ?
+                (bytes / 1024).toFixed(1) + ' KB' :
+                (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function showError(msg) {
+            fileErrorMsg.textContent = msg;
+            fileError.classList.remove('d-none');
+            btnUpload.disabled = true;
+            placeholder.classList.remove('d-none');
+            previewWrap.classList.add('d-none');
+        }
+
+        function clearError() {
+            fileError.classList.add('d-none');
+        }
+
+        function handleFile(file) {
+            clearError();
+
+            const allowed = ['image/jpeg', 'image/png', 'application/pdf'];
+            if (!allowed.includes(file.type)) {
+                showError('Format file tidak didukung. Gunakan JPG, PNG, atau PDF.');
+                return;
+            }
+            if (file.size > MAX_SIZE) {
+                showError('Ukuran file terlalu besar. Maksimal 5 MB.');
+                return;
+            }
+
+            previewName.textContent = file.name;
+            previewSize.textContent = formatBytes(file.size);
+
+            if (file.type === 'application/pdf') {
+                // Show a generic PDF icon for PDF files
+                previewImg.src = 'https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg';
+                previewImg.alt = 'PDF File';
+            } else {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    previewImg.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            placeholder.classList.add('d-none');
+            previewWrap.classList.remove('d-none');
+            btnUpload.disabled = false;
+        }
+
+        // Click to browse
+        buktiFile.addEventListener('change', function() {
+            if (this.files && this.files[0]) handleFile(this.files[0]);
+        });
+
+        // Drag-and-drop
+        dropZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.background = '#e8f0fe';
+        });
+        dropZone.addEventListener('dragleave', function() {
+            this.style.background = '';
+        });
+        dropZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.background = '';
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                buktiFile.files = dt.files;
+                handleFile(file);
+            }
+        });
+
+        // ─── AJAX Form Submit ─────────────────────────────────────────────────────
+        document.getElementById('uploadBuktiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+            btnUpload.disabled = true;
+            btnUpload.innerHTML =
+                '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Mengirim...';
+
+            fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ??
+                            '{{ csrf_token() }}'
+                    },
+                    body: formData
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        form.classList.add('d-none');
+                        document.getElementById('uploadSuccess').classList.remove('d-none');
+                    } else {
+                        showError(data.message ?? 'Gagal mengirim bukti. Silakan coba lagi.');
+                        btnUpload.disabled = false;
+                        btnUpload.innerHTML = '<i class="mdi mdi-send"></i> Kirim Bukti Pembayaran';
+                    }
+                })
+                .catch(() => {
+                    showError('Terjadi kesalahan koneksi. Silakan coba lagi.');
+                    btnUpload.disabled = false;
+                    btnUpload.innerHTML = '<i class="mdi mdi-send"></i> Kirim Bukti Pembayaran';
+                });
         });
     </script>
 @endpush
