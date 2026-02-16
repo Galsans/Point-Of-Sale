@@ -156,7 +156,7 @@
                                     <strong id="summaryTax">Rp 0</strong>
                                 </div>
                                 <div class="d-flex justify-content-between mb-2">
-                                    <span>Service Fee (50%):</span>
+                                    <span>Service Fee :</span>
                                     <strong id="summaryServiceFee">Rp 0</strong>
                                 </div>
                                 <hr>

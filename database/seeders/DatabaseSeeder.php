@@ -42,8 +42,8 @@ class DatabaseSeeder extends Seeder
         $this->call([OptionGroupSeeder::class]);
         $this->call([OptionSeeder::class]);
         $this->call([MenuOptionGroupSeeder::class]);
-        $this->call([OrderSeeder::class]);
-        $this->call([OrderItemSeeder::class]);
+        // $this->call([OrderSeeder::class]);
+        // $this->call([OrderItemSeeder::class]);
         $this->call([TaxSeeder::class]);
     }
 }

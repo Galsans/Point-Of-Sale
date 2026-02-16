@@ -93,7 +93,7 @@
 
                 <div class="text-center login-footer">
                     {{-- <small>Belum punya akun? <a href="{{ route('register') }}">Daftar</a></small> --}}
-                    <small>Belum punya akun? <a href="#">Daftar</a></small>
+                    {{-- <small>Belum punya akun? <a href="#">Daftar</a></small> --}}
 
                 </div>
             </form>

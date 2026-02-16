@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\OrderCreated;
+use App\Events\PaymentUploaded;
 use App\Models\Category;
 use App\Models\Menu;
 use App\Models\OptionGroup;
@@ -290,21 +291,80 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
+    // public function show(Order $order)
+    // {
+    //     $order->load([
+    //         'table:id,kode_table',
+    //         'items.menu'
+    //     ]);
+
+    //     return response()->json([
+    //         'order_code'    => $order->order_code,
+    //         'tableKode'     => optional($order->table)->kode_table,
+    //         'customer_name' => $order->customer_name,
+    //         'status'        => $order->status,
+    //         'total_price'   => $order->total_price,
+    //         'items'         => $order->items,
+    //     ]);
+    // }
+
     public function show(Order $order)
     {
-        $order->load([
-            'table:id,kode_table',
-            'items.menu'
-        ]);
+        if (request()->ajax()) {
 
-        return response()->json([
-            'order_code'    => $order->order_code,
-            'tableKode'     => optional($order->table)->kode_table,
-            'customer_name' => $order->customer_name,
-            'status'        => $order->status,
-            'total_price'   => $order->total_price,
-            'items'         => $order->items,
-        ]);
+            // Load semua relasi yang dibutuhkan modal
+            $order->load([
+                'table',
+                'items.menu',
+                'items.options', // ← relasi ke order_item_options
+            ]);
+
+            return response()->json([
+                'order_code'      => $order->order_code,
+                'customer_name'   => $order->customer_name,
+                'customer_email'  => $order->customer_email,
+                'customer_phone'  => $order->customer_phone,
+                'tableKode'       => optional($order->table)->kode_table,
+                'status'          => $order->status,
+                'created_at'      => $order->created_at,
+
+                // Pembayaran
+                'buktiPembayaran' => $order->buktiPembayaran,
+                'notePembayaran'  => $order->notePembayaran,
+
+                // Harga
+                'subtotal'        => $order->subtotal,
+                'tax_amount'      => $order->tax_amount,
+                'service_fee'     => $order->service_fee,
+                'total_price'     => $order->total_price,
+
+                // Items beserta options
+                'items'           => $order->items->map(function ($item) {
+                    return [
+                        'id'       => $item->id,
+                        'qty'      => $item->qty,
+                        'price'    => $item->price,
+                        'subtotal' => $item->subtotal,
+                        'menu'     => [
+                            'name' => $item->menu->name,
+                        ],
+                        // ← Ini yang penting: semua kolom option_item_options
+                        'options'  => $item->options->map(function ($opt) {
+                            return [
+                                'option_group_name' => $opt->option_group_name,
+                                'option_group_type' => $opt->option_group_type,
+                                'option_name'       => $opt->option_name,
+                                'option_price'      => $opt->option_price,
+                                'custom_value'      => $opt->custom_value,
+                            ];
+                        }),
+                    ];
+                }),
+            ]);
+        }
+
+        // Jika bukan AJAX, tampilkan view biasa (jika ada)
+        return view('admin.order.show', compact('order'));
     }
 
 
@@ -867,7 +927,10 @@ class OrderController extends Controller
         }
 
         $order->notePembayaran = $request->notePembayaran;
+        $order->status = 'paid';
         $order->save();
+
+        broadcast(new PaymentUploaded($order));
 
         return response()->json(['success' => true]);
     }

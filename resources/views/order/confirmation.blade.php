@@ -72,85 +72,99 @@
                         </div>
 
                         {{-- ═══════════════════════════════════════════════════════════════ --}}
-                        {{-- UPLOAD BUKTI PEMBAYARAN                                        --}}
+                        {{-- UPLOAD BUKTI PEMBAYARAN                                         --}}
                         {{-- ═══════════════════════════════════════════════════════════════ --}}
                         <div class="mt-4 text-start">
                             <div class="card border-primary">
                                 <div class="card-header bg-primary text-white">
                                     <h5 class="mb-0">
-                                        <i class="mdi mdi-upload"></i> Upload Bukti Pembayaran
+                                        <i class="mdi mdi-upload"></i>
+                                        {{ $order->buktiPembayaran ? 'Status Pembayaran' : 'Upload Bukti Pembayaran' }}
                                     </h5>
                                 </div>
                                 <div class="card-body">
-                                    <p class="text-muted mb-3">
-                                        Setelah melakukan pembayaran, upload bukti transfer/screenshot pembayaran Anda di
-                                        sini.
-                                    </p>
 
-                                    <form id="uploadBuktiForm" action="{{ route('order.upload-bukti', $orderCode) }}"
-                                        method="POST" enctype="multipart/form-data">
-                                        @csrf
+                                    {{-- Pengkondisian: Jika buktiPembayaran kosong (null) --}}
+                                    @if (is_null($order->buktiPembayaran))
+                                        <p class="text-muted mb-3">
+                                            Setelah melakukan pembayaran, upload bukti transfer/screenshot pembayaran Anda
+                                            di sini.
+                                        </p>
 
-                                        {{-- Drop Zone --}}
-                                        <div id="dropZone" class="border border-2 rounded p-4 text-center mb-3"
-                                            style="border-color: #0d6efd; border-style: dashed !important; cursor: pointer; transition: background 0.2s;"
-                                            onclick="document.getElementById('buktiFile').click()">
+                                        <form id="uploadBuktiForm" action="{{ route('order.upload-bukti', $orderCode) }}"
+                                            method="POST" enctype="multipart/form-data">
+                                            @csrf
 
-                                            {{-- Placeholder --}}
-                                            <div id="dropZonePlaceholder">
-                                                <i class="mdi mdi-cloud-upload text-primary" style="font-size: 48px;"></i>
-                                                <p class="mb-1 text-muted mt-2">Klik atau seret file ke sini</p>
-                                                <small class="text-muted">Format: JPG, PNG, PDF &mdash; Maks. 5 MB</small>
+                                            {{-- Drop Zone --}}
+                                            <div id="dropZone" class="border border-2 rounded p-4 text-center mb-3"
+                                                style="border-color: #0d6efd; border-style: dashed !important; cursor: pointer; transition: background 0.2s;"
+                                                onclick="document.getElementById('buktiFile').click()">
+
+                                                {{-- Placeholder --}}
+                                                <div id="dropZonePlaceholder">
+                                                    <i class="mdi mdi-cloud-upload text-primary"
+                                                        style="font-size: 48px;"></i>
+                                                    <p class="mb-1 text-muted mt-2">Klik atau seret file ke sini</p>
+                                                    <small class="text-muted">Format: JPG, PNG, PDF &mdash; Maks. 5
+                                                        MB</small>
+                                                </div>
+
+                                                {{-- Preview --}}
+                                                <div id="dropZonePreview" class="d-none">
+                                                    <img id="previewImage" src="#" alt="Preview"
+                                                        class="img-fluid rounded mb-2"
+                                                        style="max-height: 200px; object-fit: contain;">
+                                                    <p id="previewFilename" class="mb-0 text-success fw-semibold small"></p>
+                                                    <small id="previewFilesize" class="text-muted"></small>
+                                                    <br>
+                                                    <button type="button" id="btnChangeFile"
+                                                        class="btn btn-outline-secondary btn-sm mt-2"
+                                                        onclick="event.stopPropagation(); document.getElementById('buktiFile').click();">
+                                                        <i class="mdi mdi-pencil"></i> Ganti File
+                                                    </button>
+                                                </div>
                                             </div>
 
-                                            {{-- Preview (hidden until file chosen) --}}
-                                            <div id="dropZonePreview" class="d-none">
-                                                <img id="previewImage" src="#" alt="Preview"
-                                                    class="img-fluid rounded mb-2"
-                                                    style="max-height: 200px; object-fit: contain;">
-                                                <p id="previewFilename" class="mb-0 text-success fw-semibold small"></p>
-                                                <small id="previewFilesize" class="text-muted"></small>
-                                                <br>
-                                                <button type="button" id="btnChangeFile"
-                                                    class="btn btn-outline-secondary btn-sm mt-2"
-                                                    onclick="event.stopPropagation(); document.getElementById('buktiFile').click();">
-                                                    <i class="mdi mdi-pencil"></i> Ganti File
+                                            <input type="file" required id="buktiFile" name="buktiPembayaran"
+                                                accept="image/jpeg,image/png,application/pdf" class="d-none">
+
+                                            <div id="fileError" class="alert alert-danger d-none py-2 mb-3">
+                                                <i class="mdi mdi-alert-circle"></i>
+                                                <span id="fileErrorMsg"></span>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="catatanPembayaran" class="form-label text-muted small">
+                                                    <i class="mdi mdi-note-text"></i> Catatan (opsional)
+                                                </label>
+                                                <textarea required id="catatanPembayaran" name="notePembayaran" rows="2" class="form-control"
+                                                    placeholder="Contoh: Sudah transfer via BCA jam 13.00 atas nama Fulan"></textarea>
+                                            </div>
+
+                                            <div class="d-grid">
+                                                <button type="submit" id="btnUpload" class="btn btn-primary" disabled>
+                                                    <i class="mdi mdi-send"></i> Kirim Bukti Pembayaran
                                                 </button>
                                             </div>
+                                        </form>
+
+                                        {{-- Jika sudah ada value pada buktiPembayaran --}}
+                                    @else
+                                        <div id="uploadSuccess" class="alert alert-success mb-0">
+                                            <i class="mdi mdi-check-circle"></i>
+                                            <strong>Bukti pembayaran berhasil dikirim!</strong>
+                                            <p class="mb-0 mt-1 small">Pesanan Anda sedang diproses oleh kasir. Silakan
+                                                tunggu konfirmasi selanjutnya.</p>
                                         </div>
 
-                                        <input type="file" id="buktiFile" name="buktiPembayaran"
-                                            accept="image/jpeg,image/png,application/pdf" class="d-none">
-
-                                        {{-- File error --}}
-                                        <div id="fileError" class="alert alert-danger d-none py-2 mb-3">
-                                            <i class="mdi mdi-alert-circle"></i>
-                                            <span id="fileErrorMsg"></span>
+                                        {{-- Opsional: Menampilkan foto bukti yang sudah diupload --}}
+                                        <div class="mt-3 text-center">
+                                            <p class="small text-muted mb-1">Bukti yang Anda kirim:</p>
+                                            <img src="{{ asset('storage/' . $order->buktiPembayaran) }}"
+                                                class="img-thumbnail" style="max-height: 150px">
                                         </div>
+                                    @endif
 
-                                        {{-- Optional note --}}
-                                        <div class="mb-3">
-                                            <label for="catatanPembayaran" class="form-label text-muted small">
-                                                <i class="mdi mdi-note-text"></i> Catatan (opsional)
-                                            </label>
-                                            <textarea id="catatanPembayaran" name="notePembayaran" rows="2" class="form-control"
-                                                placeholder="Contoh: Sudah transfer via BCA jam 13.00"></textarea>
-                                        </div>
-
-                                        {{-- Submit --}}
-                                        <div class="d-grid">
-                                            <button type="submit" id="btnUpload" class="btn btn-primary" disabled>
-                                                <i class="mdi mdi-send"></i> Kirim Bukti Pembayaran
-                                            </button>
-                                        </div>
-                                    </form>
-
-                                    {{-- Success state (shown after submit) --}}
-                                    <div id="uploadSuccess" class="alert alert-success mt-3 d-none">
-                                        <i class="mdi mdi-check-circle"></i>
-                                        <strong>Bukti pembayaran berhasil dikirim!</strong>
-                                        Pesanan Anda sedang diproses oleh kasir.
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -212,7 +226,7 @@
                                 <strong>Rp {{ number_format($order->tax_amount, 0, ',', '.') }}</strong>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Service Fee (50%):</span>
+                                <span>Service Fee:</span>
                                 <strong>Rp {{ number_format($order->service_fee, 0, ',', '.') }}</strong>
                             </div>
                             <hr>
@@ -257,9 +271,9 @@
                 });
         }
 
-        window.addEventListener('load', function() {
-            setTimeout(downloadQRCode, 1000);
-        });
+        // window.addEventListener('load', function() {
+        //     setTimeout(downloadQRCode, 1000);
+        // });
 
         document.getElementById('downloadQris').addEventListener('click', downloadQRCode);
 

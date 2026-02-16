@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('image');
             $table->boolean('is_available')->default(true);
             $table->text('description');
+            $table->integer('qty')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

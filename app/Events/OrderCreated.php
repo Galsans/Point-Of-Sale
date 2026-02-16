@@ -5,8 +5,8 @@ namespace App\Events;
 use App\Models\Order;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
+// use Illuminate\Broadcasting\PresenceChannel;
+// use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -43,7 +43,7 @@ class OrderCreated implements ShouldBroadcast
         $data = [
             'order_code' => $this->order->order_code,
             'customer_name' => $this->order->customer_name,
-            'table_name' => $this->order->table->name ?? 'N/A',
+            'table_name' => $this->order->table->kode_table ?? 'N/A',
             'total_price' => number_format($this->order->total_price, 0, ',', '.'),
         ];
 

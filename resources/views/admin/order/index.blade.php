@@ -28,6 +28,7 @@
 
     {{-- 🔊 AUDIO NOTIFICATION --}}
     <audio id="orderSound" src="{{ asset('sounds/order.mp3') }}" preload="auto"></audio>
+    <audio id="paymentSound" src="{{ asset('sounds/payment.mp3') }}" preload="auto"></audio>
 
     {{-- <button onclick="enableSound()" class="btn btn-sm btn-outline-secondary mb-3" id="enableSoundBtn">
         🔔 Aktifkan Notifikasi Suara
