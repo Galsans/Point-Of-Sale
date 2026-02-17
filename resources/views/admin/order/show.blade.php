@@ -59,7 +59,10 @@
                                 </div>
                                 <div>
                                     <div class="text-muted" style="font-size:11px;">Meja</div>
-                                    <div class="fw-bold text-dark" id="tableCode" style="font-size:14px;">—</div>
+                                    <div class="fw-bold text-dark" id="tableCode"
+                                        style="font-size:14px;line-height:1.2;">—</div>
+                                    <div class="text-muted" id="tableFloor" style="font-size:11px;line-height:1.2;">—
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -126,7 +129,8 @@
                     <div class="d-flex align-items-center gap-2 mb-3">
                         <i class="mdi mdi-food text-primary"></i>
                         <h6 class="fw-bold mb-0 text-dark">Daftar Menu</h6>
-                        <span id="itemCount" class="badge bg-primary rounded-pill ms-1" style="font-size:11px;"></span>
+                        <span id="itemCount" class="badge bg-primary rounded-pill ms-1"
+                            style="font-size:11px;"></span>
                     </div>
 
                     {{-- Loading skeleton --}}

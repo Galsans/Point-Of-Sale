@@ -325,6 +325,7 @@ class OrderController extends Controller
                 'customer_email'  => $order->customer_email,
                 'customer_phone'  => $order->customer_phone,
                 'tableKode'       => optional($order->table)->kode_table,
+                'tableFloor'           => optional($order->table)->floor,
                 'status'          => $order->status,
                 'created_at'      => $order->created_at,
 

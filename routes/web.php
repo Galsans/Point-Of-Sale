@@ -20,10 +20,6 @@ Route::middleware('guest')->group(function () {
         return view('auth.login');
     })->name('login');
     Route::post('/login', [AuthController::class, 'login']);
-    // Route::get('/register', function () {
-    //     return view('auth.register');
-    // })->name('register');
-    // Route::post('/register', [AuthController::class, 'register']);
 });
 
 // ORDER
@@ -54,8 +50,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
 
     // routes/web.php
-    // Route::get('/order/menu', [MenuController::class, 'orderPage'])->name('order.menu');
-    // Route::post('/order/menu', [MenuController::class, 'store'])->name('order.store');
     Route::get(
         '/option-groups/{id}/options',
         [App\Http\Controllers\OptionGroupController::class, 'options']
@@ -64,16 +58,21 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/order/table/{table_id}', [App\Http\Controllers\OrderController::class, 'orderByTable'])->name('order.by-table');
 
-Route::get('/coba', function () {
-    return view('order.menu');
-});
-
-// Route::resource('orders', OrderController::class)->only(['store', 'create']);
 
 
-Route::get('test-form', function () {
-    return view('coba');
-});
+Route::get('order/menu', [OrderController::class, 'menu'])->name('order.menu');
+Route::post('order/store', [OrderController::class, 'store'])->name('order.store')
+    ->middleware('throttle:10,1'); // Max 10 request per minute
+
+Route::get('order/confirmation/{orderCode}', [OrderController::class, 'confirmation'])->name('order.confirmation');
+
+Route::post('order/upload-bukti/{orderCode}', [OrderController::class, 'uploadBukti'])->name('order.upload-bukti');
+
+
+// Route::get('test-form', function () {
+//     return view('coba');
+// });
+// Route::get('order/confirmation/{orderCode}', [OrderController::class, 'confirmation'])->name('order.confirmation');
 
 // Route::get('/order/menu', [MenuController::class, 'orderPage'])
 //     ->name('order.menu');
@@ -91,14 +90,9 @@ Route::get('test-form', function () {
 //     Route::get('/confirmation/{orderCode}', [OrderController::class, 'confirmation'])->name('confirmation');
 // });
 
-Route::get('order/menu', [OrderController::class, 'menu'])->name('order.menu');
-Route::post('order/store', [OrderController::class, 'store'])->name('order.store')
-    ->middleware('throttle:10,1'); // Max 10 request per minute
-// Route::get('order/confirmation/{orderCode}', [OrderController::class, 'confirmation'])->name('order.confirmation');
-
-Route::get('order/confirmation/{orderCode}', [OrderController::class, 'confirmation'])->name('order.confirmation');
-
-Route::post('order/upload-bukti/{orderCode}', [OrderController::class, 'uploadBukti'])->name('order.upload-bukti');
-
 // Route::get('/option-groups/search', [App\Http\Controllers\OptionGroupController::class, 'search']);
 // Route::get('/categories/search', [App\Http\Controllers\CategoryController::class, 'search'])->name('categories.search');
+
+// Route::get('/coba', function () {
+//     return view('order.menu');
+// });

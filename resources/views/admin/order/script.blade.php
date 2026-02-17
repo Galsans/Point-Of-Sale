@@ -172,6 +172,7 @@
             document.getElementById('orderCode').innerText = '—';
             document.getElementById('customerName').innerText = '—';
             document.getElementById('tableCode').innerText = '—';
+            document.getElementById('tableFloor').innerText = '—';
             document.getElementById('orderTime').innerText = '—';
             document.getElementById('totalPrice').innerText = '—';
             document.getElementById('orderItems').innerHTML = '';
@@ -200,6 +201,8 @@
                     .customer_name;
                 document.getElementById('tableCode').innerText = data.tableKode ??
                     '-';
+                document.getElementById('tableFloor').innerText = data.tableFloor ?
+                    `Lantai ${data.tableFloor}` : '';
                 document.getElementById('totalPrice').innerText = rupiah(data
                     .total_price);
 
@@ -404,13 +407,13 @@
                 }
 
                 // 🔔 TOAST NOTIFICATION
-                const tableName = data.table_name || 'N/A';
+                const tableName = data.tableKode || 'N/A';
                 const message = `
                         <strong>Order Baru!</strong><br>
                         <small>
                             ${data.order_code}<br>
                             Customer: ${data.customer_name}<br>
-                            Meja: ${tableName}<br>
+                            Meja: ${tableKode}<br>
                             Total: Rp ${data.total_price}
                         </small>
                     `;
