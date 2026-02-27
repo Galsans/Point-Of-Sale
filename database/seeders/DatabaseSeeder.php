@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
+// use App\Models\Category;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -42,8 +42,9 @@ class DatabaseSeeder extends Seeder
         $this->call([OptionGroupSeeder::class]);
         $this->call([OptionSeeder::class]);
         $this->call([MenuOptionGroupSeeder::class]);
-        // $this->call([OrderSeeder::class]);
-        // $this->call([OrderItemSeeder::class]);
+        $this->call([OrderSeeder::class]);
+        $this->call([OrderItemSeeder::class]);
         $this->call([TaxSeeder::class]);
+        $this->call([PriceOfferSeeder::class]);
     }
 }

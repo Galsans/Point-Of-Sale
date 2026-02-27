@@ -15,10 +15,6 @@
                         <h2 class="mb-3">Pesanan Berhasil Dibuat!</h2>
                         <p class="text-muted mb-4">Terima kasih atas pesanan Anda</p>
 
-                        <div class="alert alert-info">
-                            <h5 class="mb-0">Kode Pesanan: <strong>{{ $order->order_code }}</strong></h5>
-                        </div>
-
                         {{-- QRIS PAYMENT SECTION --}}
                         <div class="mt-4 text-center">
                             <div class="card bg-light">
@@ -28,7 +24,6 @@
                                     </h4>
                                     <p class="text-muted mb-3">Scan QR Code di bawah ini untuk melakukan pembayaran</p>
 
-                                    {{-- Total Amount --}}
                                     <div class="alert alert-primary mb-3">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="text-start">
@@ -46,14 +41,12 @@
                                         </div>
                                     </div>
 
-                                    {{-- QR Code Image --}}
                                     <div class="qris-container mb-3">
-                                        <img id="qrisImage" src="{{ asset('qr/qris.jpg') }}" alt="QRIS Payment"
+                                        <img id="qrisImage" src="{{ asset('image/qris.jpg') }}" alt="QRIS Payment"
                                             class="img-fluid"
-                                            style="max-width: 300px; border: 2px solid #ddd; border-radius: 10px; padding: 15px; background: white;">
+                                            style="border: 2px solid #ddd; border-radius: 10px; padding: 15px; background: white;">
                                     </div>
 
-                                    {{-- Download Button --}}
                                     <div class="mb-3">
                                         <button id="downloadQris" class="btn btn-success btn-sm">
                                             <i class="mdi mdi-download"></i> Download QR Code
@@ -63,17 +56,14 @@
                                     <div class="alert alert-warning mb-0">
                                         <small>
                                             <i class="mdi mdi-information"></i>
-                                            QR Code akan otomatis terdownload. Silakan lakukan pembayaran sesuai dengan
-                                            total di atas
+                                            Silakan lakukan pembayaran sesuai dengan total di atas
                                         </small>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {{-- ═══════════════════════════════════════════════════════════════ --}}
-                        {{-- UPLOAD BUKTI PEMBAYARAN                                         --}}
-                        {{-- ═══════════════════════════════════════════════════════════════ --}}
+                        {{-- UPLOAD BUKTI PEMBAYARAN --}}
                         <div class="mt-4 text-start">
                             <div class="card border-primary">
                                 <div class="card-header bg-primary text-white">
@@ -83,8 +73,6 @@
                                     </h5>
                                 </div>
                                 <div class="card-body">
-
-                                    {{-- ✅ SUCCESS STATE — selalu ada di DOM, awalnya disembunyikan --}}
                                     <div id="uploadSuccess" class="alert alert-success mb-0 d-none">
                                         <i class="mdi mdi-check-circle"></i>
                                         <strong>Bukti pembayaran berhasil dikirim!</strong>
@@ -94,7 +82,6 @@
                                     </div>
 
                                     @if (is_null($order->buktiPembayaran))
-                                        {{-- ✅ Bungkus semua konten form dalam satu div agar mudah disembunyikan --}}
                                         <div id="uploadFormWrap">
                                             <p class="text-muted mb-3">
                                                 Setelah melakukan pembayaran, upload bukti transfer/screenshot pembayaran
@@ -106,7 +93,6 @@
                                                 enctype="multipart/form-data">
                                                 @csrf
 
-                                                {{-- Drop Zone --}}
                                                 <div id="dropZone" class="border border-2 rounded p-4 text-center mb-3"
                                                     style="border-color: #0d6efd; border-style: dashed !important; cursor: pointer; transition: background 0.2s;"
                                                     onclick="document.getElementById('buktiFile').click()">
@@ -143,46 +129,36 @@
                                                     <span id="fileErrorMsg"></span>
                                                 </div>
 
-                                                <div class="mb-3">
-                                                    <label for="catatanPembayaran" class="form-label text-muted small">
-                                                        <i class="mdi mdi-note-text"></i> Catatan (opsional)
-                                                    </label>
-                                                    <textarea id="catatanPembayaran" name="notePembayaran" rows="2" class="form-control"
-                                                        placeholder="Contoh: Sudah transfer via BCA jam 13.00 atas nama Fulan"></textarea>
-                                                </div>
-
                                                 <div class="d-grid">
-                                                    <button type="submit" id="btnUpload" class="btn btn-primary"
-                                                        disabled>
+                                                    <button type="submit" id="btnUpload" class="btn btn-primary" disabled>
                                                         <i class="mdi mdi-send"></i> Kirim Bukti Pembayaran
                                                     </button>
                                                 </div>
                                             </form>
                                         </div>
                                     @else
-                                        {{-- Jika sudah pernah upload (page refresh), langsung tampilkan success --}}
                                         <script>
                                             document.addEventListener('DOMContentLoaded', function() {
                                                 document.getElementById('uploadSuccess').classList.remove('d-none');
                                             });
                                         </script>
-
                                         <div class="mt-3 text-center">
                                             <p class="small text-muted mb-1">Bukti yang Anda kirim:</p>
                                             <img src="{{ asset('storage/' . $order->buktiPembayaran) }}"
                                                 class="img-thumbnail" style="max-height: 150px">
                                         </div>
                                     @endif
-
                                 </div>
                             </div>
                         </div>
-                        {{-- ═══════════════════════════════════════════════════════════════ --}}
 
-                        {{-- ORDER DETAILS --}}
+                        {{-- ══════════════════════════════════════════ --}}
+                        {{-- DETAIL PESANAN                            --}}
+                        {{-- ══════════════════════════════════════════ --}}
                         <div class="text-start mt-5">
-                            <h5 class="mb-3">Detail Pesanan</h5>
+                            <h5 class="fw-bold mb-3">Detail Pesanan</h5>
 
+                            {{-- Info Pelanggan --}}
                             <div class="mb-3">
                                 <strong>Nama:</strong> {{ $order->customer_name }}<br>
                                 @if ($order->customer_email)
@@ -191,57 +167,181 @@
                                 @if ($order->customer_phone)
                                     <strong>Telepon:</strong> {{ $order->customer_phone }}<br>
                                 @endif
-                                <strong>Table:</strong> {{ $order->table->kode_table }}
+                                <strong>Meja:</strong> {{ $order->table->kode_table }} <br>
+                                <strong>Status Pembayaran:</strong>
+                                @php
+                                    $badges = [
+                                        'pending' => 'warning',
+                                        'paid' => 'info',
+                                        'completed' => 'success',
+                                        'cancelled' => 'danger',
+                                    ];
+                                    $color = $badges[$order->status] ?? 'secondary';
+                                @endphp
+                                <span class="badge bg-{{ $color }}">{{ ucfirst($order->status) }}</span>
                             </div>
 
                             <hr>
 
-                            {{-- ITEMS --}}
-                            @foreach ($order->items as $item)
-                                <div class="d-flex justify-content-between mb-2">
-                                    <div>
-                                        <strong>{{ $item->menu->name }}</strong>
-                                        <small class="text-muted">(x{{ $item->qty }})</small>
+                            {{-- ── Pisahkan items berdasarkan item_type ── --}}
+                            @php
+                                $menuItems = $order->items->where('item_type', 'menu');
+                                $packageItems = $order->items->where('item_type', 'package');
+                            @endphp
 
-                                        {{-- OPTIONS --}}
-                                        @if ($item->options->count() > 0)
-                                            <br>
-                                            <small class="text-muted">
-                                                @foreach ($item->options as $option)
-                                                    • {{ $option->option_name ?? $option->custom_value }}
-                                                    @if ($option->option_price > 0)
-                                                        (+Rp {{ number_format($option->option_price, 0, ',', '.') }})
-                                                    @endif
-                                                    <br>
-                                                @endforeach
-                                            </small>
-                                        @endif
+                            {{-- ══ SECTION: MENU BIASA ══ --}}
+                            @if ($menuItems->isNotEmpty())
+                                <div class="mb-3">
+                                    {{-- Label section --}}
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <span style="font-size:1rem;">🍽️</span>
+                                        <span class="fw-semibold text-uppercase"
+                                            style="font-size:.72rem;letter-spacing:.06em;color:#aaa;">
+                                            Menu
+                                        </span>
                                     </div>
-                                    <div>
-                                        Rp {{ number_format($item->subtotal, 0, ',', '.') }}
-                                    </div>
+
+                                    @foreach ($menuItems as $item)
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div class="flex-1 me-3">
+                                                {{-- Nama menu
+                                                     Gunakan nullable operator (??) dengan fallback ke item_name
+                                                     agar tidak error jika relasi menu null/terhapus --}}
+                                                <div class="fw-semibold">
+                                                    {{ $item->menu?->name ?? $item->item_name }}
+                                                    <span class="text-muted fw-normal small">×{{ $item->qty }}</span>
+                                                </div>
+
+                                                {{-- Harga satuan --}}
+                                                <div class="small text-muted">
+                                                    @ Rp {{ number_format($item->price, 0, ',', '.') }}
+                                                </div>
+
+                                                {{-- Opsi pilihan (radio/checkbox/text) --}}
+                                                @if ($item->options->isNotEmpty())
+                                                    <div class="mt-1 d-flex flex-wrap gap-1">
+                                                        @foreach ($item->options as $option)
+                                                            @if ($option->custom_value)
+                                                                {{-- Catatan bebas (tipe text) --}}
+                                                                <div class="w-100 small text-muted fst-italic">
+                                                                    <i
+                                                                        class="mdi mdi-note-outline me-1"></i>{{ $option->custom_value }}
+                                                                </div>
+                                                            @else
+                                                                {{-- Pilihan terstruktur --}}
+                                                                <span class="badge rounded-pill"
+                                                                    style="background:#f0f0f0;color:#444;font-weight:500;">
+                                                                    {{ $option->option_name }}
+                                                                    @if ($option->option_price > 0)
+                                                                        <span class="text-success ms-1">
+                                                                            +Rp
+                                                                            {{ number_format($option->option_price, 0, ',', '.') }}
+                                                                        </span>
+                                                                    @endif
+                                                                </span>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            {{-- Subtotal baris --}}
+                                            <div class="text-end fw-semibold text-nowrap">
+                                                Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            @endif
+
+                            {{-- Divider hanya muncul jika kedua tipe ada --}}
+                            @if ($menuItems->isNotEmpty() && $packageItems->isNotEmpty())
+                                <hr class="my-2">
+                            @endif
+
+                            {{-- ══ SECTION: PAKET BUNDLING ══ --}}
+                            @if ($packageItems->isNotEmpty())
+                                <div class="mb-3">
+                                    {{-- Label section --}}
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <span style="font-size:1rem;">🎁</span>
+                                        <span class="fw-semibold text-uppercase"
+                                            style="font-size:.72rem;letter-spacing:.06em;color:#aaa;">
+                                            Paket Bundling
+                                        </span>
+                                    </div>
+
+                                    @foreach ($packageItems as $item)
+                                        <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div class="flex-1 me-3">
+                                                {{-- Nama paket
+                                                     Paket tidak memiliki relasi menu (menu_id = null),
+                                                     gunakan item_name yang sudah disimpan saat order --}}
+                                                <div class="fw-semibold">
+                                                    {{ $item->item_name }}
+                                                    <span class="text-muted fw-normal small">×{{ $item->qty }}</span>
+                                                </div>
+
+                                                {{-- Harga satuan --}}
+                                                <div class="small text-muted">
+                                                    @ Rp {{ number_format($item->price, 0, ',', '.') }} / paket
+                                                </div>
+
+                                                {{-- Isi paket — muat via eager load 'items' pada priceOffer --}}
+                                                {{-- Di controller, pastikan eager load:                       --}}
+                                                {{-- Order::with(['items.menu', 'items.options',               --}}
+                                                {{--              'items.priceOffer.items', 'table'])           --}}
+                                                @if ($item->priceOffer && $item->priceOffer->items->isNotEmpty())
+                                                    <div class="mt-1 d-flex flex-wrap gap-1">
+                                                        @foreach ($item->priceOffer->items as $pkgContent)
+                                                            <span class="badge rounded-pill"
+                                                                style="background:#fff3e0;color:#bf360c;font-weight:500;">
+                                                                @if ($pkgContent->quantity > 1)
+                                                                    {{ $pkgContent->quantity }}×
+                                                                @endif
+                                                                {{ $pkgContent->item_name }}
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            </div>
+
+                                            {{-- Subtotal baris --}}
+                                            <div class="text-end fw-semibold text-nowrap">
+                                                Rp {{ number_format($item->subtotal, 0, ',', '.') }}
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
 
                             <hr>
 
-                            {{-- SUMMARY --}}
+                            {{-- RINGKASAN BIAYA --}}
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Subtotal:</span>
-                                <strong>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</strong>
+                                <span class="text-muted">Subtotal</span>
+                                <span>Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Pajak (10%):</span>
-                                <strong>Rp {{ number_format($order->tax_amount, 0, ',', '.') }}</strong>
+                                <span class="text-muted">Pajak (10%)</span>
+                                <span>Rp {{ number_format($order->tax_amount, 0, ',', '.') }}</span>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Service Fee:</span>
-                                <strong>Rp {{ number_format($order->service_fee, 0, ',', '.') }}</strong>
+                                <span class="text-muted">Service Fee</span>
+                                <span>Rp {{ number_format($order->service_fee, 0, ',', '.') }}</span>
                             </div>
+                            @if ($order->discount_amount > 0)
+                                <div class="d-flex justify-content-between mb-2 text-success">
+                                    <span>Diskon</span>
+                                    <span>- Rp {{ number_format($order->discount_amount, 0, ',', '.') }}</span>
+                                </div>
+                            @endif
                             <hr>
                             <div class="d-flex justify-content-between">
-                                <h5>Total:</h5>
-                                <h5 class="text-primary">Rp {{ number_format($order->total_price, 0, ',', '.') }}</h5>
+                                <h5 class="mb-0">Total</h5>
+                                <h5 class="mb-0 text-primary">
+                                    Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                                </h5>
                             </div>
                         </div>
 
@@ -250,6 +350,7 @@
                                 <i class="mdi mdi-home"></i> Kembali ke Home
                             </a>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -259,14 +360,14 @@
 
 @push('scripts')
     <script>
-        // ─── QRIS Download ────────────────────────────────────────────────────────
+        // ─── QRIS Download ───────────────────────────────────────────
         function downloadQRCode() {
             const qrisImage = document.getElementById('qrisImage');
-            const link = document.createElement('a');
             fetch(qrisImage.src)
-                .then(response => response.blob())
+                .then(r => r.blob())
                 .then(blob => {
                     const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
                     link.href = url;
                     link.download = 'QRIS-Payment-{{ $order->order_code }}.png';
                     document.body.appendChild(link);
@@ -274,165 +375,136 @@
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
                 })
-                .catch(error => {
-                    console.error('Error downloading QR Code:', error);
-                    alert('Gagal mendownload QR Code. Silakan coba lagi.');
-                });
+                .catch(() => alert('Gagal mendownload QR Code. Silakan coba lagi.'));
         }
-
-        // window.addEventListener('load', function() {
-        //     setTimeout(downloadQRCode, 1000);
-        // });
-
         document.getElementById('downloadQris').addEventListener('click', downloadQRCode);
 
-        // ─── Copy Amount ──────────────────────────────────────────────────────────
+        // ─── Copy Amount ─────────────────────────────────────────────
         document.getElementById('copyAmount').addEventListener('click', function() {
-            const totalAmount = document.getElementById('totalAmountRaw').textContent;
-            const button = this;
-            const originalHTML = button.innerHTML;
-            navigator.clipboard.writeText(totalAmount).then(function() {
-                button.innerHTML = '<i class="mdi mdi-check"></i> Copied!';
-                button.classList.remove('btn-light');
-                button.classList.add('btn-success');
+            const amount = document.getElementById('totalAmountRaw').textContent;
+            const btn = this;
+            const orig = btn.innerHTML;
+            navigator.clipboard.writeText(amount).then(function() {
+                btn.innerHTML = '<i class="mdi mdi-check"></i> Copied!';
+                btn.classList.replace('btn-light', 'btn-success');
                 setTimeout(function() {
-                    button.innerHTML = originalHTML;
-                    button.classList.remove('btn-success');
-                    button.classList.add('btn-light');
+                    btn.innerHTML = orig;
+                    btn.classList.replace('btn-success', 'btn-light');
                 }, 2000);
-            }).catch(function() {
-                alert('Gagal copy nominal. Silakan coba lagi.');
-            });
+            }).catch(() => alert('Gagal copy nominal.'));
         });
 
-        // ─── Upload Bukti Pembayaran ──────────────────────────────────────────────
-        const buktiFile = document.getElementById('buktiFile');
-        const dropZone = document.getElementById('dropZone');
-        const placeholder = document.getElementById('dropZonePlaceholder');
-        const previewWrap = document.getElementById('dropZonePreview');
-        const previewImg = document.getElementById('previewImage');
-        const previewName = document.getElementById('previewFilename');
-        const previewSize = document.getElementById('previewFilesize');
-        const fileError = document.getElementById('fileError');
-        const fileErrorMsg = document.getElementById('fileErrorMsg');
-        const btnUpload = document.getElementById('btnUpload');
-        const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+        // ─── Upload Bukti — hanya inisialisasi jika form tersedia ───
+        @if (is_null($order->buktiPembayaran))
+            (function() {
+                const buktiFile = document.getElementById('buktiFile');
+                const dropZone = document.getElementById('dropZone');
+                const placeholder = document.getElementById('dropZonePlaceholder');
+                const previewWrap = document.getElementById('dropZonePreview');
+                const previewImg = document.getElementById('previewImage');
+                const previewName = document.getElementById('previewFilename');
+                const previewSize = document.getElementById('previewFilesize');
+                const fileError = document.getElementById('fileError');
+                const fileErrorMsg = document.getElementById('fileErrorMsg');
+                const btnUpload = document.getElementById('btnUpload');
+                const MAX_SIZE = 5 * 1024 * 1024;
 
-        function formatBytes(bytes) {
-            return bytes < 1024 * 1024 ?
-                (bytes / 1024).toFixed(1) + ' KB' :
-                (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-        }
+                function formatBytes(b) {
+                    return b < 1048576 ? (b / 1024).toFixed(1) + ' KB' : (b / 1048576).toFixed(2) + ' MB';
+                }
 
-        function showError(msg) {
-            fileErrorMsg.textContent = msg;
-            fileError.classList.remove('d-none');
-            btnUpload.disabled = true;
-            placeholder.classList.remove('d-none');
-            previewWrap.classList.add('d-none');
-        }
+                function showError(msg) {
+                    fileErrorMsg.textContent = msg;
+                    fileError.classList.remove('d-none');
+                    btnUpload.disabled = true;
+                    placeholder.classList.remove('d-none');
+                    previewWrap.classList.add('d-none');
+                }
 
-        function clearError() {
-            fileError.classList.add('d-none');
-        }
+                function clearError() {
+                    fileError.classList.add('d-none');
+                }
 
-        function handleFile(file) {
-            clearError();
-
-            const allowed = ['image/jpeg', 'image/png', 'application/pdf'];
-            if (!allowed.includes(file.type)) {
-                showError('Format file tidak didukung. Gunakan JPG, PNG, atau PDF.');
-                return;
-            }
-            if (file.size > MAX_SIZE) {
-                showError('Ukuran file terlalu besar. Maksimal 5 MB.');
-                return;
-            }
-
-            previewName.textContent = file.name;
-            previewSize.textContent = formatBytes(file.size);
-
-            if (file.type === 'application/pdf') {
-                // Show a generic PDF icon for PDF files
-                previewImg.src = 'https://upload.wikimedia.org/wikipedia/commons/8/87/PDF_file_icon.svg';
-                previewImg.alt = 'PDF File';
-            } else {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    previewImg.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-
-            placeholder.classList.add('d-none');
-            previewWrap.classList.remove('d-none');
-            btnUpload.disabled = false;
-        }
-
-        // Click to browse
-        buktiFile.addEventListener('change', function() {
-            if (this.files && this.files[0]) handleFile(this.files[0]);
-        });
-
-        // Drag-and-drop
-        dropZone.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            this.style.background = '#e8f0fe';
-        });
-        dropZone.addEventListener('dragleave', function() {
-            this.style.background = '';
-        });
-        dropZone.addEventListener('drop', function(e) {
-            e.preventDefault();
-            this.style.background = '';
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                const dt = new DataTransfer();
-                dt.items.add(file);
-                buktiFile.files = dt.files;
-                handleFile(file);
-            }
-        });
-
-        // ─── AJAX Form Submit ─────────────────────────────────────────────────────
-        document.getElementById('uploadBuktiForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const form = this;
-            const formData = new FormData(form);
-            btnUpload.disabled = true;
-            btnUpload.innerHTML =
-                '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Mengirim...';
-
-            fetch(form.action, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ??
-                            '{{ csrf_token() }}'
-                    },
-                    body: formData
-                })
-                .then(res => {
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
-                    return res.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        // ✅ Sembunyikan seluruh wrap form (termasuk teks di atasnya)
-                        document.getElementById('uploadFormWrap').classList.add('d-none');
-
-                        // ✅ Tampilkan success (sekarang selalu ada di DOM)
-                        document.getElementById('uploadSuccess').classList.remove('d-none');
-                    } else {
-                        showError(data.message ?? 'Gagal mengirim bukti. Silakan coba lagi.');
-                        btnUpload.disabled = false;
-                        btnUpload.innerHTML = '<i class="mdi mdi-send"></i> Kirim Bukti Pembayaran';
+                function handleFile(file) {
+                    clearError();
+                    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                        showError('Format tidak didukung. Gunakan JPG atau PNG.');
+                        return;
                     }
-                })
-                .catch(() => {
-                    showError('Terjadi kesalahan koneksi. Silakan coba lagi.');
+                    if (file.size > MAX_SIZE) {
+                        showError('Ukuran melebihi 5 MB.');
+                        return;
+                    }
+
+                    previewName.textContent = file.name;
+                    previewSize.textContent = formatBytes(file.size);
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        previewImg.src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                    placeholder.classList.add('d-none');
+                    previewWrap.classList.remove('d-none');
                     btnUpload.disabled = false;
-                    btnUpload.innerHTML = '<i class="mdi mdi-send"></i> Kirim Bukti Pembayaran';
+                }
+
+                buktiFile.addEventListener('change', function() {
+                    if (this.files[0]) handleFile(this.files[0]);
                 });
-        });
+                dropZone.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    dropZone.style.background = '#e8f0fe';
+                });
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.style.background = '';
+                });
+                dropZone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    dropZone.style.background = '';
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        const dt = new DataTransfer();
+                        dt.items.add(file);
+                        buktiFile.files = dt.files;
+                        handleFile(file);
+                    }
+                });
+
+                document.getElementById('uploadBuktiForm').addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    btnUpload.disabled = true;
+                    btnUpload.innerHTML =
+                        '<span class="spinner-border spinner-border-sm me-1"></span> Mengirim...';
+
+                    fetch(this.action, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    ?.content ?? '{{ csrf_token() }}'
+                            },
+                            body: new FormData(this)
+                        })
+                        .then(r => {
+                            if (!r.ok) throw new Error('HTTP ' + r.status);
+                            return r.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('uploadFormWrap').classList.add('d-none');
+                                document.getElementById('uploadSuccess').classList.remove('d-none');
+                            } else {
+                                showError(data.message ?? 'Gagal mengirim bukti.');
+                                btnUpload.disabled = false;
+                                btnUpload.innerHTML = '<i class="mdi mdi-send"></i> Kirim Bukti Pembayaran';
+                            }
+                        })
+                        .catch(() => {
+                            showError('Kesalahan koneksi. Silakan coba lagi.');
+                            btnUpload.disabled = false;
+                            btnUpload.innerHTML = '<i class="mdi mdi-send"></i> Kirim Bukti Pembayaran';
+                        });
+                });
+            })();
+        @endif
     </script>
 @endpush

@@ -100,7 +100,7 @@ class CategorySeeder extends Seeder
         ]);
 
         $coffee = DB::table('categories')->insertGetId([
-            'name' => 'Coffee-Ine',
+            'name' => 'Coffee',
             'parent_id' => null,
             'created_at' => $now,
             'updated_at' => $now,

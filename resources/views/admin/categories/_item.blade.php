@@ -37,9 +37,9 @@
                 </h5>
 
                 {{-- PRIMARY ACTION --}}
-                <a href="#" class="btn btn-sm btn-gradient-primary px-4">
+                {{-- <a href="#" class="btn btn-sm btn-gradient-primary px-4">
                     Menu
-                </a>
+                </a> --}}
 
             </div>
         </div>

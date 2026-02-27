@@ -14,6 +14,13 @@
             </a>
         </li>
 
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('price-offers.index') }}">
+                <span class="menu-title">Price offer</span>
+                <i class="mdi mdi-cash menu-icon"></i>
+            </a>
+        </li>
+
         {{-- <li class="nav-item nav-category">MENU MANAGEMENT</li> --}}
 
         <li class="nav-item">
