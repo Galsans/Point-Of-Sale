@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
 
         User::create([
             'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('password'),
+            'email' => 'katalojiadmin@gmail.com',
+            'password' => Hash::make('@dminkataloj15'),
             'role' => 'admin',
         ]);
 
@@ -42,8 +42,8 @@ class DatabaseSeeder extends Seeder
         $this->call([OptionGroupSeeder::class]);
         $this->call([OptionSeeder::class]);
         $this->call([MenuOptionGroupSeeder::class]);
-        $this->call([OrderSeeder::class]);
-        $this->call([OrderItemSeeder::class]);
+        // $this->call([OrderSeeder::class]);
+        // $this->call([OrderItemSeeder::class]);
         $this->call([TaxSeeder::class]);
         $this->call([PriceOfferSeeder::class]);
     }

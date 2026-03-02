@@ -67,8 +67,7 @@
                         class="form-control @error('email') is-invalid @enderror" placeholder="Masukkan email"
                         value="{{ old('email') }}" required> --}}
                     <input type="email" name="email" id="email"
-                        class="form-control @error('email') is-invalid @enderror" placeholder="Masukkan email"
-                        value="admin@gmail.com" required>
+                        class="form-control @error('email') is-invalid @enderror" placeholder="Masukkan email" required>
                     @error('email')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -81,7 +80,7 @@
                         required> --}}
                     <input type="password" name="password" id="password"
                         class="form-control @error('password') is-invalid @enderror" placeholder="Masukkan password"
-                        value="password" required>
+                        required>
                     @error('password')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
