@@ -52,7 +52,7 @@
                     <span id="summaryTax">Rp 0</span>
                 </div>
                 <div class="d-flex justify-content-between mb-2">
-                    <span class="text-muted">Service Fee (5%)</span>
+                    <span class="text-muted">Service Fee:</span>
                     <span id="summaryServiceFee">Rp 0</span>
                 </div>
                 <hr>
@@ -120,7 +120,7 @@
                                 <span>Pajak (10%):</span><strong id="modalSummaryTax">Rp 0</strong>
                             </div>
                             <div class="d-flex justify-content-between mb-2">
-                                <span>Service Fee (5%):</span><strong id="modalSummaryServiceFee">Rp 0</strong>
+                                <span>Service Fee:</span><strong id="modalSummaryServiceFee">Rp 0</strong>
                             </div>
                             <hr>
                             <div class="d-flex justify-content-between">

@@ -41,4 +41,14 @@ class Menu extends Model
         )->withPivot('is_required', 'min_choice', 'max_choice', 'sort_order')
             ->orderBy('menu_option_groups.sort_order');
     }
+
+    /**
+     * Order items yang berasal dari menu ini.
+     * menu_id bisa NULL di order_items jika item berasal dari price_offer,
+     * sehingga relasi ini secara natural hanya mengembalikan baris dengan menu_id = id menu ini.
+     */
+    public function orderItems(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(\App\Models\OrderItem::class, 'menu_id');
+    }
 }

@@ -16,10 +16,23 @@ class PriceOfferSeeder extends Seeder
         $menus = DB::table('menus')->get()->keyBy('name');
 
         // Helper: cari menu by nama, return null jika tidak ada
-        $menuId = fn(string $name) => $menus->get($name)?->id ?? null;
+        $menuId    = fn(string $name) => $menus->get($name)?->id ?? null;
         $menuPrice = fn(string $name) => $menus->get($name)?->price ?? 0;
 
         // ── Data paket ──
+        // Semua item_name sudah disinkronisasi dengan nama menu yang ada di MenuSeeder
+        //
+        // MAPPING PERUBAHAN dari versi lama:
+        //   'Es Teh Manis'   → 'Lemon Tea'          (kategori Tea, paling mirip)
+        //   'Kopi Susu'      → 'Gula Aren'           (kategori Coffee Fusion, kopi susu aren)
+        //   'Jus Alpukat'    → 'Matcha Original'     (kategori Matcha, minuman premium)
+        //   'Roti Bakar'     → 'Butter Croissant'    (kategori Sweet & Pastries, pastry sarapan)
+        //   'Telur Dadar'    → 'Spicy Corn Ribs'     (kategori Starter, snack pendamping)
+        //   'Steak Beef'     → 'Iga Bakar'           (kategori Main Course, main dish premium)
+        //   'Pudding Coklat' → 'Cheese Cake'         (kategori Sweet & Pastries, dessert)
+        //   'Tiramisu'       → 'Pain au Choco'       (kategori Sweet & Pastries, dessert premium)
+        //   'Ayam Bakar'     → 'Ayam Bakar Bumbu Rujak' (nama lengkap yang ada di menu)
+
         $packages = [
 
             // ─────────────────────────────────────
@@ -38,9 +51,9 @@ class PriceOfferSeeder extends Seeder
                     'available_until' => '15:00:00',
                 ],
                 'items' => [
-                    ['name' => 'Nasi Goreng',   'category' => 'Makanan',  'quantity' => 1],
-                    ['name' => 'Es Teh Manis',  'category' => 'Minuman',  'quantity' => 1],
-                    ['name' => 'Pudding Coklat', 'category' => 'Dessert',  'quantity' => 1],
+                    ['name' => 'Nasi Goreng',   'category' => 'Main Course',      'quantity' => 1],
+                    ['name' => 'Lemon Tea',     'category' => 'Tea',              'quantity' => 1],
+                    ['name' => 'Cheese Cake',   'category' => 'Sweet & Pastries', 'quantity' => 1],
                 ],
             ],
 
@@ -60,9 +73,9 @@ class PriceOfferSeeder extends Seeder
                     'available_until' => '10:30:00',
                 ],
                 'items' => [
-                    ['name' => 'Roti Bakar',    'category' => 'Makanan',  'quantity' => 2],
-                    ['name' => 'Telur Dadar',   'category' => 'Makanan',  'quantity' => 1],
-                    ['name' => 'Kopi Susu',     'category' => 'Minuman',  'quantity' => 1],
+                    ['name' => 'Butter Croissant', 'category' => 'Sweet & Pastries', 'quantity' => 2],
+                    ['name' => 'Spicy Corn Ribs',  'category' => 'Starter Menu',     'quantity' => 1],
+                    ['name' => 'Americano',         'category' => 'Coffee Enthusiasm', 'quantity' => 1],
                 ],
             ],
 
@@ -72,7 +85,7 @@ class PriceOfferSeeder extends Seeder
             [
                 'package' => [
                     'name'            => 'Paket Premium',
-                    'description'     => 'Pengalaman makan terbaik. Steak pilihan dengan dessert eksklusif.',
+                    'description'     => 'Pengalaman makan terbaik. Iga bakar pilihan dengan dessert eksklusif.',
                     'badge'           => null,
                     'package_price'   => 120000,
                     'category'        => 'Makan Malam',
@@ -82,9 +95,9 @@ class PriceOfferSeeder extends Seeder
                     'available_until' => '22:00:00',
                 ],
                 'items' => [
-                    ['name' => 'Steak Beef',    'category' => 'Makanan',  'quantity' => 1],
-                    ['name' => 'Jus Alpukat',   'category' => 'Minuman',  'quantity' => 1],
-                    ['name' => 'Tiramisu',      'category' => 'Dessert',  'quantity' => 1],
+                    ['name' => 'Iga Bakar',       'category' => 'Main Course',      'quantity' => 1],
+                    ['name' => 'Matcha Original', 'category' => 'Matcha Series',    'quantity' => 1],
+                    ['name' => 'Pain au Choco',   'category' => 'Sweet & Pastries', 'quantity' => 1],
                 ],
             ],
 
@@ -104,10 +117,10 @@ class PriceOfferSeeder extends Seeder
                     'available_until' => null,
                 ],
                 'items' => [
-                    ['name' => 'Nasi Goreng',   'category' => 'Makanan',  'quantity' => 2],
-                    ['name' => 'Ayam Bakar',    'category' => 'Makanan',  'quantity' => 2],
-                    ['name' => 'Es Teh Manis',  'category' => 'Minuman',  'quantity' => 3],
-                    ['name' => 'Pudding Coklat', 'category' => 'Dessert',  'quantity' => 2],
+                    ['name' => 'Nasi Goreng',           'category' => 'Main Course',      'quantity' => 2],
+                    ['name' => 'Ayam Bakar Bumbu Rujak', 'category' => 'Main Course',      'quantity' => 2],
+                    ['name' => 'Lemon Tea',             'category' => 'Tea',              'quantity' => 3],
+                    ['name' => 'Cheese Cake',           'category' => 'Sweet & Pastries', 'quantity' => 2],
                 ],
             ],
 
@@ -127,14 +140,14 @@ class PriceOfferSeeder extends Seeder
                     'available_until' => '18:00:00',
                 ],
                 'items' => [
-                    ['name' => 'Kopi Susu',         'category' => 'Minuman',  'quantity' => 1],
-                    ['name' => 'Roti Bakar',         'category' => 'Makanan',  'quantity' => 1],
-                    ['name' => 'Pudding Coklat',     'category' => 'Dessert',  'quantity' => 1],
+                    ['name' => 'Gula Aren',        'category' => 'Coffee Fusion',    'quantity' => 1],
+                    ['name' => 'Butter Croissant', 'category' => 'Sweet & Pastries', 'quantity' => 1],
+                    ['name' => 'Cheese Cake',      'category' => 'Sweet & Pastries', 'quantity' => 1],
                 ],
             ],
 
             // ─────────────────────────────────────
-            // PAKET 6 — Non-aktif (contoh paket tidak tampil)
+            // PAKET 6 — Non-aktif
             // ─────────────────────────────────────
             [
                 'package' => [
@@ -143,17 +156,17 @@ class PriceOfferSeeder extends Seeder
                     'badge'           => null,
                     'package_price'   => 55000,
                     'category'        => 'Spesial',
-                    'is_active'       => false, // ← tidak tampil di QR menu
+                    'is_active'       => false,
                     'sort_order'      => 6,
                     'available_from'  => '17:30:00',
                     'available_until' => '20:00:00',
                 ],
                 'items' => [
-                    ['name' => 'Nasi Goreng',   'category' => 'Makanan',  'quantity' => 1],
-                    ['name' => 'Ayam Bakar',    'category' => 'Makanan',  'quantity' => 1],
-                    ['name' => 'Es Teh Manis',  'category' => 'Minuman',  'quantity' => 1],
-                    ['name' => 'Jus Alpukat',   'category' => 'Minuman',  'quantity' => 1],
-                    ['name' => 'Tiramisu',      'category' => 'Dessert',  'quantity' => 1],
+                    ['name' => 'Nasi Goreng',           'category' => 'Main Course',      'quantity' => 1],
+                    ['name' => 'Ayam Bakar Bumbu Rujak', 'category' => 'Main Course',      'quantity' => 1],
+                    ['name' => 'Lemon Tea',             'category' => 'Tea',              'quantity' => 1],
+                    ['name' => 'Matcha Original',       'category' => 'Matcha Series',    'quantity' => 1],
+                    ['name' => 'Pain au Choco',         'category' => 'Sweet & Pastries', 'quantity' => 1],
                 ],
             ],
 
@@ -169,10 +182,9 @@ class PriceOfferSeeder extends Seeder
                 $originalPrice += $menuPrice($item['name']) * $item['quantity'];
             }
 
-            // Jika original_price 0 (menu belum ada), fallback ke package_price + estimasi
-            // Ini agar seeder tetap jalan meski menu belum di-seed
+            // Fallback jika menu belum ada
             if ($originalPrice === 0) {
-                $originalPrice = $pkg['package_price'] * 1.1; // asumsi hemat 10%
+                $originalPrice = $pkg['package_price'] * 1.1;
             }
 
             $offerId = DB::table('price_offers')->insertGetId([
@@ -198,7 +210,7 @@ class PriceOfferSeeder extends Seeder
 
                 DB::table('price_offer_items')->insert([
                     'price_offer_id' => $offerId,
-                    'menu_id'        => $linkedMenuId ?? 1, // fallback ke menu pertama jika tidak ditemukan
+                    'menu_id'        => $linkedMenuId,
                     'item_name'      => $item['name'],
                     'item_price'     => $linkedMenuPrice > 0 ? $linkedMenuPrice : 10000,
                     'category'       => $item['category'],
@@ -209,11 +221,10 @@ class PriceOfferSeeder extends Seeder
                 ]);
             }
 
-            $this->command->info("✅ Paket \"{$pkg['name']}\" berhasil dibuat ({$offerId})");
+            $this->command->info("✅ Paket \"{$pkg['name']}\" berhasil dibuat (id: {$offerId})");
         }
 
         $this->command->info('');
         $this->command->info('🎉 PriceOfferSeeder selesai! ' . count($packages) . ' paket berhasil di-seed.');
-        $this->command->warn('⚠️  Pastikan nama menu di seeder sesuai dengan nama menu di tabel menus Anda.');
     }
 }

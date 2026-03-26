@@ -26,12 +26,12 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        User::create([
-            'name' => 'Kasir',
-            'email' => 'kasir@gmail.com',
-            'password' => Hash::make('password'),
-            'role' => 'kasir',
-        ]);
+        // User::create([
+        //     'name' => 'Kasir',
+        //     'email' => 'kasir@gmail.com',
+        //     'password' => Hash::make('password'),
+        //     'role' => 'kasir',
+        // ]);
 
         // Category::create(['name' => 'Makanan']);
         // Category::create(['name' => 'Minuman']);
