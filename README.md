@@ -1,59 +1,187 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📦 POS System (Laravel + Reverb Realtime WebSocket)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem **Point of Sale (POS)** berbasis Laravel dengan fitur realtime menggunakan **Laravel Reverb**, memungkinkan update transaksi, stok, dan dashboard secara langsung tanpa refresh halaman.
 
-## About Laravel
+Sistem ini dirancang untuk kebutuhan kasir modern, manajemen stok, dan laporan penjualan secara efisien dan cepat.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Demo Project
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+> (Opsional jika ada deployment)
 
-## Learning Laravel
+- 🌐 Live Demo: `https://your-domain.com`
+- 📁 Admin Panel: `/admin`
+- 💳 Kasir: `/cashier`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## ✨ Fitur Utama
 
-## Laravel Sponsors
+- 🔐 Authentication (Login & Register)
+- 👥 Role Management (Admin & Kasir)
+- 📦 Manajemen Produk
+- 📊 Manajemen Stok Barang
+- 🧾 Sistem Transaksi POS
+- 📈 Laporan Penjualan
+- 🔔 Realtime Notification (Laravel Reverb)
+- ⚡ Update dashboard tanpa reload
+- 🧾 Riwayat transaksi lengkap
+- 📱 Responsive UI (mobile friendly)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🛠️ Tech Stack
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- PHP 8+
+- Laravel Framework 10/11
+- MySQL / MariaDB
+- Laravel Reverb (WebSocket Server)
+- Laravel Echo
+- Vite
+- Bootstrap 
+- Node.js (frontend build tools)
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## ⚙️ Instalasi Project
 
-## Code of Conduct
+### 1. Clone Repository
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+git clone https://github.com/username/pos-laravel-reverb.git
+cd pos-laravel-reverb
+```
 
-## Security Vulnerabilities
+### 2. Install Dependency
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+composer install
+npm install
+npm run dev
+```
 
-## License
+### 3. Setup Environment
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+---
+
+## 🗄️ Setup Database
+
+Edit file `.env`:
+
+```env
+DB_DATABASE=pos_db
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Lalu jalankan migration:
+
+```bash
+php artisan migrate --seed
+```
+
+---
+
+## ⚡ Setup Laravel Reverb (Realtime WebSocket)
+
+### 1. Install Reverb
+
+```bash
+composer require laravel/reverb
+```
+
+### 2. Install Config Reverb
+
+```bash
+php artisan reverb:install
+```
+
+### 3. Konfigurasi `.env`
+
+```env
+REVERB_APP_ID=pos-app
+REVERB_APP_KEY=pos-key
+REVERB_APP_SECRET=pos-secret
+
+REVERB_HOST=127.0.0.1
+REVERB_PORT=8080
+REVERB_SCHEME=http
+
+BROADCAST_CONNECTION=reverb
+```
+
+### 4. Jalankan Reverb Server
+
+```bash
+php artisan reverb:start
+```
+
+---
+
+## 📡 Setup Laravel Echo (Frontend Realtime)
+
+Install dependency:
+
+```bash
+npm install laravel-echo pusher-js
+```
+
+Konfigurasi `resources/js/bootstrap.js`:
+
+```js
+import Echo from 'laravel-echo';
+
+window.Echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: window.location.hostname,
+    wsPort: 8080,
+    forceTLS: false,
+    disableStats: true,
+});
+```
+
+---
+
+## 🔔 Contoh Event Realtime POS
+
+### Event: Transaksi Baru
+
+```php
+class NewTransactionCreated implements ShouldBroadcast
+{
+    public $transaction;
+
+    public function __construct($transaction)
+    {
+        $this->transaction = $transaction;
+    }
+
+    public function broadcastOn()
+    {
+        return new Channel('pos-transactions');
+    }
+}
+```
+
+### Trigger Event
+
+```php
+event(new NewTransactionCreated($transaction));
+```
+
+### Frontend Listener
+
+```js
+Echo.channel('pos-transactions')
+    .listen('NewTransactionCreated', (e) => {
+        console.log('Transaksi baru:', e.transaction);
+        // update UI realtime
+    });
+```
